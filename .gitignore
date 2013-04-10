@@ -1,0 +1,5 @@
+a.out
+mpi_cuda
+mpi_hello_world
+**.pyc
+__pycache__
