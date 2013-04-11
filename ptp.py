@@ -12,3 +12,5 @@ if rank == 0:
 elif rank == 1:
     data = comm.recv(source=0, tag=11)
     print("Message Receved, data is: ", data)
+else:
+    print("What about me?!")
