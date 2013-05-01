@@ -8,8 +8,8 @@ h = hpy()
 
 N = 10 ** 8
 
-a = np.random.randn(1, N)
-b = np.random.randn(1, N)
+a = np.random.randn(1, N).astype(np.float32)
+b = np.random.randn(1, N).astype(np.float32)
 
 start = time.time()
 c = a + b
