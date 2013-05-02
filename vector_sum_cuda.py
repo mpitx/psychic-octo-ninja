@@ -5,9 +5,14 @@ import pycuda.gpuarray as gpuarray
 import pycuda.driver as cuda
 import pycuda.autoinit
 from pycuda.compiler import SourceModule
+import math
 import time
 
 N = 10 ** 8
+MAX_THREADS = \
+    cuda.Device(0) \
+        .get_attribute(pycuda._driver.device_attribute.MAX_THREADS_PER_BLOCK)
+BLOCK_SIZE = int(math.sqrt(MAX_THREADS))
 
 a = np.random.randn(N).astype(np.float32)
 b = np.random.randn(N).astype(np.float32)
@@ -30,7 +35,7 @@ def vector_add():
         b_gpu = cuda.mem_alloc(slice_b.nbytes)
         cuda.memcpy_htod(b_gpu, slice_b)
         c_gpu = cuda.mem_alloc(slice_c.nbytes)
-        func(a_gpu, b_gpu, c_gpu, block=(22, 22, 1))
+        func(a_gpu, b_gpu, c_gpu, block=(BLOCK_SIZE, BLOCK_SIZE, 1))
         cuda.memcpy_dtoh(slice_c, c_gpu)
         return slice_c
 
