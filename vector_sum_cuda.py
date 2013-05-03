@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import numpy as np
 import pycuda.gpuarray as gpuarray
 import pycuda.driver as cuda
@@ -8,15 +9,17 @@ from pycuda.compiler import SourceModule
 import math
 import time
 
-N = 10 ** 8
 MAX_THREADS = \
     cuda.Device(0) \
         .get_attribute(pycuda._driver.device_attribute.MAX_THREADS_PER_BLOCK)
 BLOCK_SIZE = int(math.sqrt(MAX_THREADS))
 
-a = np.random.randn(N).astype(np.float32)
-b = np.random.randn(N).astype(np.float32)
-c = np.empty_like(a)
+a_filename = os.path.abspath('../../a.npy')
+b_filename = os.path.abspath('../../b.npy')
+c_filename = os.path.abspath('../../c.npy')
+a = np.load(a_filename, mmap_mode='r')
+b = np.load(b_filename, mmap_mode='r')
+N = len(a)
 
 mod = SourceModule('''
     __global__ void vector_sum(float *a, float *b, float *c)
@@ -35,22 +38,28 @@ def vector_add():
         b_gpu = cuda.mem_alloc(slice_b.nbytes)
         cuda.memcpy_htod(b_gpu, slice_b)
         c_gpu = cuda.mem_alloc(slice_c.nbytes)
+        start = time.time()
         func(a_gpu, b_gpu, c_gpu, block=(BLOCK_SIZE, BLOCK_SIZE, 1))
+        end = time.time()
         cuda.memcpy_dtoh(slice_c, c_gpu)
-        return slice_c
+        return (slice_c, end-start)
 
-    c = np.empty_like(a)
+    c = np.memmap(c_filename, dtype=np.float32, shape=a.shape, mode='w+')
+    total_time = 0
     max = 2 ** 26
-    M = int((N + max)/max)
+    M = int((N + max - 1)/max)
     for i in range(0, M):
         slice_low = i * max
         slice_high = (i + 1) * max
-        c = np.append(c, add(a[slice_low:slice_high],
-                             b[slice_low:slice_high]))
+        result = add(a[slice_low:slice_high], b[slice_low:slice_high])
+        np.append(c, result[0])
+        total_time = total_time + result[1]
 
-    return c
+    return (c, total_time)
 
-start = time.time()
-vector_add()
-end = time.time()
-print("Time taken to add %d-Vector to %d-Vector: %s" % (N, N, str(end-start)))
+total_start = time.time()
+total_time = vector_add()[1]
+total_end = time.time()
+print("Time taken to add %d-Vector to %d-Vector: %s" %
+    (N, N, str(total_end-total_start)))
+print("\tTotal Computational Time: %s" % str(total_time))
