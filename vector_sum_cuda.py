@@ -46,7 +46,7 @@ def vector_add():
 
     c = np.memmap(c_filename, dtype=np.float32, shape=a.shape, mode='w+')
     total_time = 0
-    max = 2 ** 26
+    max = 2 ** 24
     M = int((N + max - 1)/max)
     for i in range(0, M):
         slice_low = i * max
