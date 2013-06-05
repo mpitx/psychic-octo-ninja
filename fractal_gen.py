@@ -2,12 +2,14 @@
 
 import os
 import sys
+import shutil
 import numpy as np
+from tempfile import mkdtemp
 
-N = 100 * 100
 I = 100
 limits = (-2.0, 2.0)
-size = (2048, 2048)
+size = 8192
+N = size ** 2
 irange = sum(abs(x) for x in limits)
 
 def solve(z):
@@ -23,17 +25,17 @@ def solve(z):
     return 1.0
 
 def a(x):
-    return limits[0] + (irange / size[0]) * x
+    return limits[0] + (irange / size) * x
 
 def b(y):
-    return limits[1] - (irange / size[1]) * y
+    return limits[1] - (irange / size) * y
 
-img = []
-for y in range(size[0]):
-    row = []
-    for x in range(size[1]):
-        row.append(solve(complex(a(x), b(y))))
-    img.extend(row)
+tempdir = mkdtemp()
+filename = os.path.join(tempdir, 'newimage.npy')
+fp = np.memmap(filename, dtype='float32', mode='w+', shape=(N,))
+for y in range(size):
+    for x in range(size):
+        fp[x + y * size] = solve(complex(a(x), b(y)))
 
 def pixel(x):
     getP = lambda l,h: int(255 * (x - l) / (h - l))
@@ -63,7 +65,10 @@ def pixel(x):
 with open('fractal.ppm', 'w') as fimg:
     fimg.write('P3\n')
     fimg.write('#Big Fractal Image\n')
-    fimg.write('%d %d\n' % (size[0], size[1]))
+    fimg.write('%d %d\n' % (size, size))
     fimg.write('255\n')
-    for x in img:
+    for x in fp:
         fimg.write('%d %d %d ' % pixel(x))
+
+del fp
+shutil.rmtree(tempdir)
