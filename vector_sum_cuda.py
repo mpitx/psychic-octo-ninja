@@ -14,9 +14,9 @@ MAX_THREADS = \
         .get_attribute(pycuda._driver.device_attribute.MAX_THREADS_PER_BLOCK)
 BLOCK_SIZE = int(math.sqrt(MAX_THREADS))
 
-a_filename = os.path.abspath('../../a.npy')
-b_filename = os.path.abspath('../../b.npy')
-c_filename = os.path.abspath('../../c.npy')
+a_filename = os.path.join(os.environ['HOME'], 'a.npy')
+b_filename = os.path.join(os.environ['HOME'], 'b.npy')
+c_filename = os.path.join(os.environ['HOME'], 'c.npy')
 a = np.load(a_filename, mmap_mode='r')
 b = np.load(b_filename, mmap_mode='r')
 N = len(a)

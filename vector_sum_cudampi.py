@@ -26,9 +26,9 @@ kernel_source = '''
     '''
 kernel = SourceModule(kernel_source)
 
-a_filename = os.path.abspath('../../a.npy')
-b_filename = os.path.abspath('../../b.npy')
-c_filename = os.path.abspath('../../c.npy')
+a_filename = os.path.join(os.environ['HOME'], 'a.npy')
+b_filename = os.path.join(os.environ['HOME'], 'b.npy')
+c_filename = os.path.join(os.environ['HOME'], 'c.npy')
 
 a = np.load(a_filename, mmap_mode='r')
 b = np.load(b_filename, mmap_mode='r')
