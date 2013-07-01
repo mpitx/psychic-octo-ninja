@@ -38,5 +38,4 @@ total_start = time.time()
 node_calc_time = vector_add()[1]
 #vector_add()
 total_end = time.time()
-print("Time taken to add %d-Vector to %d-Vector: %s" %
-    (M, M, str(total_end-total_start)))
+print("%d %s %s" % (rank, str(total_end-total_start), str(node_calc_time)))
