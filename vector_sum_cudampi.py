@@ -48,9 +48,9 @@ def vector_add():
         cuda.memcpy_dtoh(slice_c, c_gpu)
         return (slice_c, end-start)
 
-    c = np.memmap(c_filename, dtype=np.float32, shape=a.shape, mode='r+')
+    c = np.memmap(c_filename, dtype=np.float32, shape=a.shape, mode='w+')
     total_time = 0
-    card_max = 2 ** 26
+    card_max = 2 ** 24
     M = int((N + card_max - 1)/ card_max)
     m = int((M + size - 1) / size)
     for i in range(0, m):
