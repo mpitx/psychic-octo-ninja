@@ -3,9 +3,7 @@
 import os
 import numpy as np
 import time
-from guppy import hpy
 
-h = hpy()
 
 a_filename = os.path.join(os.environ['HOME'], 'a.npy')
 b_filename = os.path.join(os.environ['HOME'], 'b.npy')
@@ -21,4 +19,3 @@ c = a + b
 end = time.time()
 
 print("Time taken to add %d-Vector to %d-Vector: %s" % (N, N, str(end-start)))
-print(h.heap())
