@@ -26,9 +26,12 @@ kernel_source = '''
     '''
 kernel = SourceModule(kernel_source)
 
-a_filename = os.path.join(os.environ['HOME'], 'a.npy')
-b_filename = os.path.join(os.environ['HOME'], 'b.npy')
-c_filename = os.path.join(os.environ['HOME'], 'c.npy')
+
+data_in_dir = os.path.join(os.environ['HOME'], 'Data', 'in', 'vsum')
+tmp_data_dir = os.path.join(os.environ['HOME'], 'tmp', 'vsum')
+a_filename = os.path.join(data_in_dir, 'a.npy')
+b_filename = os.path.join(data_in_dir, 'b.npy')
+c_filename = os.path.join(tmp_data_dir, 'slice-%d.npy' % rank)
 
 a = np.load(a_filename, mmap_mode='r')
 b = np.load(b_filename, mmap_mode='r')
